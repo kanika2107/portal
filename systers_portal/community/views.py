@@ -1,3 +1,6 @@
+from django.views.generic import ListView
+from django.views.generic.detail import SingleObjectMixin
+
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
@@ -8,6 +11,11 @@ from community.forms import CommunityForm
 from community.mixins import CommunityMenuMixin
 from community.models import Community
 from common.mixins import UserDetailsMixin
+from community.models import CommunityPage
+
+
+
+
 
 
 class ViewCommunityProfileView(DetailView):
@@ -40,8 +48,21 @@ class EditCommunityProfileView(LoginRequiredMixin, PermissionRequiredMixin,
 
 class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
     """Community page view"""
-    template_name = "community/base.html"
+    template_name = "community/page.html"
     model = Community
+
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Community.objects.all())
+        return super(CommunityPageView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(CommunityPageView, self).get_context_data(**kwargs)
+        context["community"] = self.object
+        return context
+
+    def get_queryset(self):
+        return CommunityPage.objects.filter(community=self.object)
 
     def get_community(self):
         """Overrides the method from CommunityMenuMixin to extract the current
@@ -58,3 +79,6 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         :return: string CommunityPage slug
         """
         return self.kwargs.get('page_slug')
+
+  
+    
