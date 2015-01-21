@@ -1,6 +1,3 @@
-from django.views.generic import ListView
-from django.views.generic.detail import SingleObjectMixin
-
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
@@ -9,13 +6,8 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from community.forms import CommunityForm
 from community.mixins import CommunityMenuMixin
-from community.models import Community
+from community.models import Community, CommunityPage
 from common.mixins import UserDetailsMixin
-from community.models import CommunityPage
-
-
-
-
 
 
 class ViewCommunityProfileView(DetailView):
@@ -51,7 +43,6 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
     template_name = "community/page.html"
     model = Community
 
-
     def get(self, request, *args, **kwargs):
         self.object = self.get_object(queryset=Community.objects.all())
         return super(CommunityPageView, self).get(request, *args, **kwargs)
@@ -79,6 +70,3 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         :return: string CommunityPage slug
         """
         return self.kwargs.get('page_slug')
-
-  
-    
